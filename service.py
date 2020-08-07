@@ -9,11 +9,13 @@ import schema
 import model
 
 def create_item(db: Session, item: schema.Item) -> schema.Item:
+    if read_items(db, name=item.name):
+        raise HTTPException(400, "Item with same name already existing")
+
     if item.listed_since is None:
         item.listed_since = date.today()
 
     db_item = model.Item(**item.dict())
-    print(db_item)
     db.add(db_item)
     db.commit()
     db.refresh(db_item)
@@ -26,8 +28,9 @@ def read_item(db: Session, id: int) -> schema.Item:
 
     return item
 
-def read_items(db: Session, name: str, manufacturer: str, listed_starting: str, listed_ending: str,
-               description: str, price_ge: float, price_le: float) -> List[schema.Item]:
+def read_items(db: Session, name: str = None, manufacturer: str = None, listed_starting: str = None,
+               listed_ending: str = None, description: str = None, price_ge: float = None,
+               price_le: float = None) -> List[schema.Item]:
     item_query : Query = db.query(model.Item)
 
     if name is not None:
