@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Query
 from fastapi.openapi.utils import get_openapi
 from sqlalchemy.orm import Session
 from starlette.middleware.gzip import GZipMiddleware
@@ -54,8 +54,13 @@ def get_item_handler(id: int, db: Session = Depends(get_db)):
 
 
 @app.get("/item/", operation_id='get_items', tags=["Item"], response_model=List[Item], status_code=200)
-def get_items_handler(name: str = None, manufacturer: str = None, description: str = None, price_ge: float = None,
-                      price_le: float = None, db: Session = Depends(get_db)):
+def get_items_handler(
+        name: str = None,
+        manufacturer: str = None,
+        description: str = None,
+        price_ge: float = Query(None, format="double"),
+        price_le: float = Query(None, format="double"),
+        db: Session = Depends(get_db)):
     return read_items(db, name, manufacturer, description, price_ge, price_le)
 
 
