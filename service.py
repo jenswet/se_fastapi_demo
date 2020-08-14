@@ -28,8 +28,7 @@ def read_item(db: Session, id: int) -> schema.Item:
 
     return item
 
-def read_items(db: Session, name: str = None, manufacturer: str = None, listed_starting: str = None,
-               listed_ending: str = None, description: str = None, price_ge: float = None,
+def read_items(db: Session, name: str = None, manufacturer: str = None, description: str = None, price_ge: float = None,
                price_le: float = None) -> List[schema.Item]:
     item_query : Query = db.query(model.Item)
 
@@ -37,23 +36,6 @@ def read_items(db: Session, name: str = None, manufacturer: str = None, listed_s
         item_query = item_query.filter(func.lower(model.Item.name).contains(func.lower(name)))
     if manufacturer is not None:
         item_query = item_query.filter(func.lower(model.Item.manufacturer).contains(func.lower(manufacturer)))
-    if listed_starting is not None or listed_ending is not None:
-
-        try:
-            if(listed_starting):
-                listed_starting = date.fromisoformat(listed_starting)
-            else:
-                listed_starting = date.min
-        except:
-            raise HTTPException(400, "listed_starting invalid")
-        try:
-            if(listed_ending):
-                listed_ending = date.fromisoformat(listed_ending)
-            else:
-                listed_ending = date.max
-        except:
-            raise HTTPException(400, "listed_ending invalid")
-        item_query = item_query.filter(model.Item.listed_since.between(listed_starting, listed_ending))
     if description is not None:
         item_query = item_query.filter(func.lower(model.Item.description).contains(func.lower(description)))
     if price_ge is not None:
