@@ -16,13 +16,14 @@ app = FastAPI(
     root_path="https://ovgu.jwet.de/api/fastapi",
     servers=[
         {
-            "url": "https://ovgu.jwet.de/api/fastapi",
-            "description": "The FastAPI (code-first) version of this SE API demo"
-        },
-        {
             "url": "https://ovgu.jwet.de/api/spring",
             "description": "The Spring (contract-first) version of this SE API demo"
-        }],
+        },
+        {
+            "url": "https://ovgu.jwet.de/api/fastapi",
+            "description": "The FastAPI (code-first) version of this SE API demo"
+        }
+    ],
     title="Sample Item REST API",
     version="1.1.1",
     description="This API provides access to the items in the sample app for Service Engineering Summer Term 2020."
