@@ -4,6 +4,7 @@ from fastapi import FastAPI, Depends, Query
 from fastapi.openapi.utils import get_openapi
 from sqlalchemy.orm import Session
 from starlette.middleware.gzip import GZipMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 
 import model
 from schema import Item
@@ -11,18 +12,35 @@ from service import create_item, delete_item, update_item, read_item, read_items
 
 model.Base.metadata.create_all(bind=model.engine)
 
-app = FastAPI()
+app = FastAPI(
+    root_path="https://ovgu.jwet.de/api/fastapi",
+    servers=[
+        {
+            "url": "https://ovgu.jwet.de/api/fastapi",
+            "description": "The FastAPI (code-first) version of this SE API demo"
+        },
+        {
+            "url": "https://ovgu.jwet.de/api/spring",
+            "description": "The Spring (contract-first) version of this SE API demo"
+        }],
+    title="Sample Item REST API",
+    version="1.1.1",
+    description="This API provides access to the items in the sample app for Service Engineering Summer Term 2020."
+)
 
 
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
     openapi_schema = get_openapi(
-        title="Sample Item REST API",
-        version="1.1.1",
-        description="This API provides access to the items in the sample app for Service Engineering Summer Term 2020.",
-        routes=app.routes,
-    )
+                title=app.title,
+                version=app.version,
+                openapi_version=app.openapi_version,
+                description=app.description,
+                routes=app.routes,
+                tags=app.openapi_tags,
+                servers=app.servers,
+            )
     openapi_schema["info"]["x-logo"] = {
         "url": "https://fastapi.tiangolo.com/img/logo-margin/logo-teal.png"
     }
@@ -33,6 +51,12 @@ def custom_openapi():
 app.openapi = custom_openapi
 
 app.add_middleware(GZipMiddleware, minimum_size=200)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 
 def get_db():
