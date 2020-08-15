@@ -13,6 +13,8 @@ from service import create_item, delete_item, update_item, read_item, read_items
 model.Base.metadata.create_all(bind=model.engine)
 
 app = FastAPI(
+    root_path="/api/fastapi",
+    root_path_in_servers=False,
     servers=[
         {
             "url": "https://ovgu.jwet.de/api/spring",
