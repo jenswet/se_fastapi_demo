@@ -13,6 +13,7 @@ from service import create_item, delete_item, update_item, read_item, read_items
 model.Base.metadata.create_all(bind=model.engine)
 
 app = FastAPI(
+    openapi_url="/api/fastapi/openapi.json",
     servers=[
         {
             "url": "https://ovgu.jwet.de/",
